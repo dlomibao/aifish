@@ -3,6 +3,7 @@
 #include<SDL.h>
 #include<SDL_image.h>
 #include "Texture.h"
+#include "GameObj.h"
 
 const int SCREEN_WIDTH=1024;
 const int SCREEN_HEIGHT=768;
@@ -75,15 +76,42 @@ int main(int argc,char** argv){
 
 	if(!init()){cout<<"init failed"<<endl; exit(1);}
 	if(!load()){cout<<"load failed"<<endl; exit(2);}
+
+	///////////////test object
+	//GameObj(Texture* tex,double turnRate,double acceleration,double vmax,double brakerate,double friction){
+
+	GameObj shark(&sharktex,400,400,0,5.0,.3,2,.5,.0005);
+
+
+
 	bool quit=false;
 	SDL_Event e;
 	while(!quit){
 		//event handling
 		while(SDL_PollEvent(&e)!=0){
 			if(e.type==SDL_QUIT){quit=true;}
+			else if(e.type==SDL_KEYDOWN){
+				switch(e.key.keysym.sym){
+				case SDLK_LEFT:
+					shark.turnLeft();
+					break;
+				case SDLK_RIGHT:
+					shark.turnRight();
+					break;
+				case SDLK_UP:
+					shark.accelerate();
+					break;
+				case SDLK_DOWN:
+					shark.brake();
+					break;
+				default: break;
+				}
+			}
 		}
-		SDL_RenderClear(renderer);//clearScreen
+		shark.update();
 
+		SDL_RenderClear(renderer);//clearScreen
+		shark.render();
 		sharktex.render(100,100,NULL,90,NULL);
 		foodtex.render(200,200,NULL,0,NULL);
 		fishtex.render(300,300,NULL,0,NULL);
